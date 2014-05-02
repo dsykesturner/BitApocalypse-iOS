@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "GameViewController.h"
+#import "ViewController.h"
 
 @implementation AppDelegate
 
@@ -42,5 +44,27 @@
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+
+
+-(void)moveToGameScreen
+{
+    GameViewController *gameVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"GameViewController"];
+    
+    self.window.rootViewController = gameVC;
+    [self.window makeKeyAndVisible];
+}
+-(void)moveToHomeScreen
+{
+    ViewController *homeVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"ViewController"];
+    
+    self.window.rootViewController = homeVC;
+    [self.window makeKeyAndVisible];
+}
+
+
+
+
+
 
 @end

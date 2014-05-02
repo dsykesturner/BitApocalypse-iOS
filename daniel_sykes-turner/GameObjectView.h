@@ -10,13 +10,13 @@
 
 @interface GameObjectView : UIView
 
-@property (nonatomic) BOOL canMove; //for objects like building - may not need this
+@property (nonatomic) BOOL affectedByGravity; //for objects like building - may not need this
 
 @property (nonatomic) float currentSpeedX; //the speed traveling horizontally
 @property (nonatomic) float currentSpeedY; //the speed traveling vertically
 @property (nonatomic) float mass; //width * height (px)
 
-@property (nonatomic) int damage; //equal to the mass. object is destoryed when this runs out
+@property (nonatomic) int damage; //equal to the mass. object is destoryed when this reaches 0
 
 @property (strong, nonatomic) UIImageView * imageView;
 

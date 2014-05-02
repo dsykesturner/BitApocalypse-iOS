@@ -8,30 +8,44 @@
 
 #import "GameViewController.h"
 #import "GameObjectView.h"
+#import "AppDelegate.h"
+#import "TransitionManager.h"
 
-@interface GameViewController () <UIAlertViewDelegate>
+#import <CoreMotion/CoreMotion.h>
+#import <GameKit/GameKit.h>
 
+@interface GameViewController ()
 
-
-@property (weak, nonatomic) IBOutlet UILabel *lblTimeBeforeCrash;
+@property (weak, nonatomic) IBOutlet UILabel *lblMeteorScore;
+@property (weak, nonatomic) IBOutlet UILabel *lblMeteorHighscore;
+@property (weak, nonatomic) IBOutlet UILabel *lblTimeScore;
 @property (weak, nonatomic) IBOutlet UILabel *lblTimeHighscore;
-@property (strong, nonatomic) IBOutlet UIView *endGameView;
+@property (weak, nonatomic) IBOutlet UIView *endGameView;
+@property (strong, nonatomic) UIImageView *imgShipFlame;
 
 @property (strong, nonatomic) NSTimer * trmUpdateObjects;
-@property (strong, nonatomic) NSTimer * trmCountTimeBeforeCrash;
+@property (strong, nonatomic) NSTimer * trmCountTimeScore;
 @property (strong, nonatomic) NSTimer * trmCreateMeteors;
+@property (strong, nonatomic) NSTimer * trmAnimateShipFlame;
 
 @property (strong, nonatomic) GameObjectView * shipObject;
 @property (strong, nonatomic) NSMutableArray * gameObjectArray;
+
+@property (strong, nonatomic) NSString * shipsDirectionOfMovement;
+
+@property (strong, nonatomic) CMMotionManager *motionManager;
 
 @property (nonatomic) float updateFrequency;
 @property (nonatomic) float speedFactor;
 @property (nonatomic) float gravityConstant;
 
-@property (nonatomic) int timeBeforeCrash;
+@property (nonatomic) int timeScore;
 @property (nonatomic) int timeHighscore;
+@property (nonatomic) int meteorScore;
+@property (nonatomic) int meteorHighscore;
 
 @property (nonatomic) BOOL gameOver;
+@property (nonatomic) BOOL shipAnimationStep;
 
 @end
 
@@ -51,17 +65,46 @@
     // Do any additional setup after loading the view.
     
     
-    self.timeHighscore = 12;
-    self.lblTimeHighscore.text = @"Highscore: 12";
+    //start the accelerometer
+    //self.motionManager = [[CMMotionManager alloc] init]; //turned off for now
+    [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMAccelerometerData *data, NSError *error) {
+        
+        //lest the ship object update properly
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            if (self.gameOver == NO)
+            {
+                //detect direction of movement
+                if (data.acceleration.x >= 0.04) self.shipsDirectionOfMovement = @"right";
+                else if (data.acceleration.x <= -0.04) self.shipsDirectionOfMovement = @"left";
+                else self.shipsDirectionOfMovement = @"up";
+                
+                self.shipObject.center = CGPointMake(self.shipObject.center.x+data.acceleration.x*15, self.shipObject.center.y);
+                
+                if (self.shipObject.center.x < 0)
+                    self.shipObject.center = CGPointMake(0, self.shipObject.center.y);
+                else if (self.shipObject.center.x > self.view.frame.size.width)
+                    self.shipObject.center = CGPointMake(320, self.shipObject.center.y);
+            }
+        });
+    }];
     
     self.gameObjectArray = [[NSMutableArray alloc] init];
     self.updateFrequency = 0.01;//changes the speed and the cpu usage of the game
     self.speedFactor = 1;       //changes the speed of the game
     self.gameOver = YES;
+    self.endGameView.hidden = YES;
     
     self.trmUpdateObjects = [NSTimer scheduledTimerWithTimeInterval:self.updateFrequency target:self selector:@selector(updateObjects) userInfo:nil repeats:YES];
     
-    [self startGame];
+    self.meteorHighscore = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"meteorHighscore"];
+    self.timeHighscore = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"timeHighscore"];
+    self.lblTimeHighscore.text = [NSString stringWithFormat:@"DURATION: %i", self.timeHighscore];
+    self.lblMeteorHighscore.text = [NSString stringWithFormat:@"HIGHSCORE: %i", self.meteorHighscore];
+    
+    [TransitionManager lightenScreenWithView:nil forViewController:self completion:^(BOOL finished) {
+        [self startGame];
+    }];
 }
 - (void)didReceiveMemoryWarning
 {
@@ -69,6 +112,132 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+
+-(void)reportGameCentreScore
+{
+    GKScore *reportScore = [[GKScore alloc] initWithLeaderboardIdentifier:@"meteorHighscores"];
+    reportScore.value = self.meteorHighscore;
+    
+    [GKScore reportScores:[NSArray arrayWithObjects:reportScore, nil] withCompletionHandler:nil];
+}
+-(void)endGame
+{
+    self.gameOver = YES;
+    self.endGameView.hidden = NO;
+    
+    //turn off ships rockets
+    self.imgShipFlame.image = nil;
+    
+    //stop timers
+    [self.trmCountTimeScore invalidate];
+    [self.trmCreateMeteors invalidate];
+    [self.trmAnimateShipFlame invalidate];
+    
+    //update highscore
+    if (self.meteorScore > self.meteorHighscore)
+    {
+        self.meteorHighscore = self.meteorScore;
+        self.timeHighscore = self.timeScore;
+        
+        self.lblTimeHighscore.text = [NSString stringWithFormat:@"DURATION: %i", self.timeHighscore];
+        self.lblMeteorHighscore.text = [NSString stringWithFormat:@"HIGHSCORE: %i", self.meteorHighscore];
+        
+        [[NSUserDefaults standardUserDefaults] setInteger:self.meteorHighscore forKey:@"meteorHighscore"];
+        [[NSUserDefaults standardUserDefaults] setInteger:self.timeHighscore forKey:@"timeHighscore"];
+        
+        //send new high scores only
+        [self reportGameCentreScore];
+    }
+}
+-(void)startGame
+{
+    //hide the gameover view
+    self.endGameView.hidden = YES;
+    
+    //reset game variabes
+    self.gravityConstant = 5.5;
+    self.timeScore = 0;
+    self.meteorScore = 0;
+    self.lblTimeScore.text = [NSString stringWithFormat:@"%0.1f/%0.2fDURATION: %i", self.gravityConstant, self.shipObject.currentSpeedY, self.timeScore];
+    self.lblMeteorScore.text = [NSString stringWithFormat:@"SCORE: %i", self.meteorScore];
+    
+    
+    //create the ship, launch pad
+    [self createRectange:CGRectMake(155,
+                                    self.view.frame.size.height,
+                                    10,
+                                    50) andForceX:0 andForceY:0 withMovingOptions:NO];
+    self.shipObject = self.gameObjectArray[0];
+    [self.shipObject setImageViewFromImage:[UIImage imageNamed:@"ship"]];
+    
+    if (self.imgShipFlame == nil) self.imgShipFlame = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 15, 10)];
+    self.imgShipFlame.center = CGPointMake(self.shipObject.frame.size.width/2, self.shipObject.frame.size.height);
+    [self.shipObject addSubview:self.imgShipFlame];
+    
+    UIView *launchPad = [[UIView alloc] initWithFrame:CGRectMake(85,
+                                                                 self.view.frame.size.height+self.shipObject.frame.size.height,
+                                                                 150,
+                                                                 30)];
+    launchPad.backgroundColor = [UIColor grayColor];
+    [self.view addSubview:launchPad];
+    
+    
+    
+    
+    //animations - load up ship and launch pad - fire ship up, launch pad falls off screen - meteors start, launch pad released
+    [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        
+        self.shipObject.frame = CGRectMake(self.shipObject.frame.origin.x,
+                                           self.shipObject.frame.origin.y-launchPad.frame.size.height-self.shipObject.frame.size.height,
+                                           self.shipObject.frame.size.width,
+                                           self.shipObject.frame.size.height);
+        
+        launchPad.frame = CGRectMake(launchPad.frame.origin.x,
+                                     launchPad.frame.origin.y-launchPad.frame.size.height-self.shipObject.frame.size.height,
+                                     launchPad.frame.size.width,
+                                     launchPad.frame.size.height);
+        
+        self.trmAnimateShipFlame = [NSTimer scheduledTimerWithTimeInterval:0.03 target:self selector:@selector(animateShipFlame) userInfo:nil repeats:YES];
+        
+    } completion:^(BOOL finished) {
+        
+        [UIView animateWithDuration:1 delay:0.3 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            
+            self.gameOver = NO;
+            
+            self.shipObject.frame = CGRectMake(self.shipObject.frame.origin.x,
+                                               self.shipObject.frame.origin.y-200,
+                                               self.shipObject.frame.size.width,
+                                               self.shipObject.frame.size.height);
+            
+            launchPad.frame = CGRectMake(launchPad.frame.origin.x,
+                                         launchPad.frame.origin.y+launchPad.frame.size.height,
+                                         launchPad.frame.size.width,
+                                         launchPad.frame.size.height);
+            
+        } completion:^(BOOL finished) {
+            
+            //remove launch pad
+            [launchPad removeFromSuperview];
+            
+            //start timers
+            self.trmCountTimeScore = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(countTimeScore) userInfo:nil repeats:YES];
+            self.trmCreateMeteors = [NSTimer scheduledTimerWithTimeInterval:0.40 target:self selector:@selector(createRandomMeteor) userInfo:nil repeats:YES];
+        }];
+    }];
+    
+}
+-(IBAction)newGame:(id)sender
+{
+    [self startGame];
+}
+-(IBAction)exitGame:(id)sender
+{
+    [TransitionManager darkenScreenWithView:nil forViewController:self completion:^(BOOL finished) {
+        [app_delegate moveToHomeScreen];
+    }];
+}
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -87,7 +256,44 @@
         UITouch * myTouch = [touches anyObject];
         CGPoint touchPoint = [myTouch locationInView:self.view];
         
+        //detect direction of movement
+        float difference = touchPoint.x - self.shipObject.center.x;
+        if (difference >= 1.5) self.shipsDirectionOfMovement = @"right";
+        else if (difference <= -1.5) self.shipsDirectionOfMovement = @"left";
+        else self.shipsDirectionOfMovement = @"up";
+        
         self.shipObject.center = CGPointMake(touchPoint.x, self.shipObject.center.y);
+    }
+}
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    self.shipsDirectionOfMovement = @"up";
+}
+-(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    self.shipsDirectionOfMovement = @"up";
+}
+-(void)animateShipFlame
+{
+    if (self.shipsDirectionOfMovement.length == 0) self.shipsDirectionOfMovement = @"up";
+    
+    
+    if (self.shipAnimationStep == 0)
+    {
+        self.shipAnimationStep = 1;
+        
+        if ([self.shipsDirectionOfMovement isEqualToString:@"up"])
+            [self.imgShipFlame setImage:[UIImage imageNamed:@"flameMoveUp1"]];
+        else if ([self.shipsDirectionOfMovement isEqualToString:@"left"])
+            [self.imgShipFlame setImage:[UIImage imageNamed:@"flameMoveLeft"]];
+        else if ([self.shipsDirectionOfMovement isEqualToString:@"right"])
+            [self.imgShipFlame setImage:[UIImage imageNamed:@"flameMoveRight"]];
+    }
+    else
+    {
+        self.shipAnimationStep = 0;
+        
+        [self.imgShipFlame setImage:[UIImage imageNamed:@"flameMoveUp2"]];
     }
 }
 
@@ -102,7 +308,7 @@
         
         //only move the object if it's movable,
         //only check for colisions if its not
-        if (object.canMove == YES)
+        if (object.affectedByGravity == YES)
         {
             float newX = object.center.x+(self.speedFactor*object.currentSpeedX);
             float newY = object.center.y-(self.speedFactor*object.currentSpeedY);
@@ -111,35 +317,24 @@
             if (self.gameOver == NO)
             {
                 //check if two views are touching
-                for (int i2 = 0; i2 < self.gameObjectArray.count; i2++)
+                if (CGRectIntersectsRect(object.frame, self.shipObject.frame) &&
+                    !(
+                      (object.currentSpeedX == 0 && object.currentSpeedY == 0) &&
+                      (self.shipObject.currentSpeedX == 0 && self.shipObject.currentSpeedY == 0)
+                      ))
                 {
-                    if (i2 != i)//shouldn't compare itself
-                    {
-                        GameObjectView *object2 = self.gameObjectArray[i2];
-                        
-                        if (CGRectIntersectsRect(object.frame, object2.frame) &&
-                            !(
-                              (object.currentSpeedX == 0 && object.currentSpeedY == 0) &&
-                              (object2.currentSpeedX == 0 && object2.currentSpeedY == 0)
-                              ))
-                        {
-                            [self bumpObject:object withObject:object2];
-                            
-                        }
-                    }
+                    [self bumpObject:object withObject:self.shipObject];
                 }
             }
-        }
-        
-        
-        
-        
-        //delete object if its out of bounds
-        if (!CGRectIntersectsRect(object.frame, self.view.frame))
-        {
-            //[object removeFromSuperview];
-            [self.gameObjectArray removeObjectAtIndex:i];
-            object = nil;
+            
+            
+            //delete object if its out of bounds
+            if (!CGRectIntersectsRect(object.frame, self.view.frame))
+            {
+                //[object removeFromSuperview];
+                [self.gameObjectArray removeObjectAtIndex:i];
+                object = nil;
+            }
         }
     }
 }
@@ -150,7 +345,7 @@
     for (int i = 0; i < self.gameObjectArray.count; i++)
     {
         GameObjectView *object = self.gameObjectArray[i];
-        if (object.canMove == YES || object.damage <= 0)
+        if (object.affectedByGravity == YES || object.damage <= 0)
         {
             
             object.currentSpeedY -= force;
@@ -175,17 +370,10 @@
         //make sure the two objects are no longer overlapping, and determin the direction of impact
         [self calculateDirectionFromObject1:object1 andObject2:object2];
         
-        //half the force and change the direction and add some friction
-//        [self calculateMomentumChangesFromObject1:object1 andObject2:object2 withDirection:direction];
-        
-        //add friction
-//        [self addFrictionToObject1:object1 andObject2:object2];
-        
         //add damage
         [self calculateDamageChangesFromObject1:object1 andObject2:object2];
     }
 }
-
 -(void)calculateDirectionFromObject1:(GameObjectView *)object1 andObject2:(GameObjectView *)object2
 {
     NSString *direction;
@@ -208,114 +396,13 @@
         object1.center = CGPointMake(object2.center.x+(obj1Width/2+obj2Width/2), object1.center.y);
     }
 }
-/*-(void)calculateMomentumChangesFromObject1:(GameObjectView *)object1 andObject2:(GameObjectView *)object2 withDirection:(NSString *)direction
-{
-    //half the force and change the direction
-    if (object1.canMove == NO)
-    {
-        //only halve the force of the non immovable object
-        if ([direction isEqualToString:@"left"] || [direction isEqualToString:@"right"]) object2.currentSpeedX /= -2;
-        else object2.currentSpeedY /= -2;
-    }
-    else if (object2.canMove == NO)
-    {
-        //only halve the force of the non immovable object
-        if ([direction isEqualToString:@"left"] || [direction isEqualToString:@"right"]) object1.currentSpeedX /= -2;
-        else object1.currentSpeedY /= -2;
-    }
-    else
-    {
-        //calculate the current momentum of each object
-        float momentum1X = object1.currentSpeedX * object1.mass;
-        float momentum2X = object2.currentSpeedX * object2.mass;
-        float momentum1Y = object1.currentSpeedY * object1.mass;
-        float momentum2Y = object2.currentSpeedY * object2.mass;
-        
-        //take the average
-        float momentum3X = (momentum1X + momentum2X) / 2;
-        float momentum3Y = (momentum1Y + momentum2Y) / 2;
-        if (momentum1X + momentum2X == 0) momentum3X = -momentum1X;
-        if (momentum1Y + momentum2Y == 0) momentum3Y = -momentum1Y;
-        
-        int gravityForce = self.gravityConstant*self.updateFrequency;
-        
-        //give back the force
-        //
-        //if both are facing the same direction
-        if ((object1.currentSpeedX > gravityForce && object2.currentSpeedX > gravityForce) || (object1.currentSpeedX < -gravityForce && object2.currentSpeedX < -gravityForce))
-        {
-            // object 1 is moving faster than object 2
-            // so object 1 takes the old speed of object 2
-            // and object 2 adds on the difference in speed between itself and object 1
-            if (momentum1X > momentum2X)
-            {
-                object1.currentSpeedX = momentum1X - (momentum1X - momentum2X);
-                object2.currentSpeedX = momentum2X + (momentum1X - momentum2X);
-            }
-            
-            if (momentum2X > momentum1X)
-            {
-                object1.currentSpeedX = momentum1X + (momentum2X - momentum1X);
-                object2.currentSpeedX = momentum2X - (momentum2X - momentum1X);
-            }
-        }
-        //if head on - obj1 is moving slower than obj2, change direction of obj1
-        else if (object1.currentSpeedX < object2.currentSpeedX)
-        {
-            object1.currentSpeedX = (momentum3X / object1.mass) * -1;
-            object2.currentSpeedX = (momentum3X / object2.mass);
-        }
-        //if head on - obj2 is moving slower than obj1, change direction of obj2
-        else if (object1.currentSpeedX > object2.currentSpeedX)
-        {
-            object1.currentSpeedX = (momentum3X / object1.mass);
-            object2.currentSpeedX = (momentum3X / object2.mass) * -1;
-        }
-        //if head on - both are moving at the same speed, change directino of both
-        else if ([direction isEqualToString:@"right"] || [direction isEqualToString:@"left"])
-        {
-            //if they're equal, and moving horizontal - swap directions of both
-            object1.currentSpeedX = (momentum3X / object1.mass) * -1;
-            object2.currentSpeedX = (momentum3X / object2.mass) * -1;
-        }
-        
-        
-        //see details above
-        if ((object1.currentSpeedY > gravityForce && object2.currentSpeedY > gravityForce) || (object1.currentSpeedY < -gravityForce && object2.currentSpeedY < -gravityForce))
-        {
-            // object 1 is moving faster than object 2
-            // so object 1 takes the old speed of object 2
-            // and object 2 adds on the difference in speed between itself and object 1
-            if (momentum1Y > momentum2Y)
-            {
-                object1.currentSpeedY = momentum1Y - (momentum1Y - momentum2Y);
-                object2.currentSpeedY = momentum2Y + (momentum1Y - momentum2Y);
-            }
-            if (momentum2Y > momentum1Y)
-            {
-                object1.currentSpeedY = momentum1Y + (momentum2Y - momentum1Y);
-                object2.currentSpeedY = momentum2Y - (momentum2Y - momentum1Y);
-            }
-        }
-        else if (object1.currentSpeedY < object2.currentSpeedY)
-        {
-            object1.currentSpeedY = (momentum3Y / object1.mass) * -1;
-            object2.currentSpeedY = (momentum3Y / object2.mass);
-        }
-        else if (object1.currentSpeedY > object2.currentSpeedY)
-        {
-            object1.currentSpeedY = (momentum3Y / object1.mass);
-            object2.currentSpeedY = (momentum3Y / object2.mass) * -1;
-        }
-    }
-}*/
 -(void)calculateDamageChangesFromObject1:(GameObjectView *)object1 andObject2:(GameObjectView *)object2
 {
     //give an object damage, only movable objects can damage unmovable objects (and the other way around)
 
     //damage taken depends on the combined speed from both directions
         float damageConstant = 0.1;
-        if (object2.canMove == NO)
+        if (object2.affectedByGravity == NO)
         {
             int damage = object1.mass * (object1.currentSpeedX + object1.currentSpeedY) * damageConstant;
             if (object1.currentSpeedX + object1.currentSpeedY > 0.1)        object2.damage -= damage;
@@ -353,45 +440,38 @@
     {
         [self endGame];
     }
-//        if (object1.canMove) object1.backgroundColor = [UIColor colorWithRed:0 green:percentDamage1 blue:0 alpha:1];
-//        else object1.backgroundColor = [UIColor colorWithRed:0 green:0 blue:percentDamage1 alpha:1];
-//        
-//        if (object2.canMove) object2.backgroundColor = [UIColor colorWithRed:0 green:percentDamage2 blue:0 alpha:1];
-//        else object2.backgroundColor = [UIColor colorWithRed:0 green:0 blue:percentDamage2 alpha:1];
-//    }
 }
-/*-(void)addFrictionToObject1:(GameObjectView *)object1 andObject2:(GameObjectView *)object2
-{
-    //add some friction
-    float friction = 0.8;
-    if (object1.currentSpeedX != 0) object1.currentSpeedX *= friction;
-    if (object1.currentSpeedX != 0) object1.currentSpeedX *= friction;
-    if (object2.currentSpeedX != 0) object2.currentSpeedX *= friction;
-    if (object2.currentSpeedX != 0) object2.currentSpeedX *= friction;
-}*/
 
 
--(void)createRectange:(CGRect)rect andForceX:(float)forceX andForceY:(float)forceY withMovingOptions:(BOOL)canMove
+-(void)createRectange:(CGRect)rect andForceX:(float)forceX andForceY:(float)forceY withMovingOptions:(BOOL)affectedByGravity
 {
     GameObjectView *newRect = [[GameObjectView alloc] initWithFrame:CGRectMake(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)];
     
-    if (canMove)
+    if (affectedByGravity)//if a meteor
     {
-        newRect.backgroundColor = [UIColor greenColor];
+        NSString *type;
+        int randImage = arc4random() % 5 + 1;
+        
+        if ((arc4random() % 3) == 0) type = @"b";
+        else type = @"a";
+        UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"meteor%i%@", randImage, type]];
+        [newRect setImageViewFromImage:image];
+        
+        newRect.backgroundColor = [UIColor clearColor];
         newRect.mass = newRect.frame.size.width * newRect.frame.size.height;
     }
-    else
+    else//if a landing pad
     {
         newRect.mass = newRect.frame.size.width * newRect.frame.size.height;
     }
     newRect.currentSpeedX = forceX;
     newRect.currentSpeedY = forceY;
-    newRect.canMove = canMove;
+    newRect.affectedByGravity = affectedByGravity;
     
     newRect.damage = newRect.mass;
     
     [self.view addSubview:newRect];//doing this return endGameView to its original position for some reason
-    if (canMove) self.gameObjectArray[self.gameObjectArray.count] = newRect;
+    if (affectedByGravity) self.gameObjectArray[self.gameObjectArray.count] = newRect;
     else
     {
         if ([self.gameObjectArray containsObject:self.shipObject])
@@ -405,110 +485,35 @@
 -(void)createRandomMeteor
 {
     int size = arc4random() % 3;
-    if (size == 0) size = 10;
-    else size = 30;
+    if (size == 0)
+    {
+        size = 10;
+        self.meteorScore += 1;
+    }
+    else
+    {
+        size = 30;
+        self.meteorScore += 3;
+    }
     
     int randX = arc4random() % (320 + size*2) - size*3;
     
     [self createRectange:CGRectMake(randX, -size, size, size) andForceX:0 andForceY:0 withMovingOptions:YES];
     [self createRectange:CGRectMake(randX+size+20, -size, size, size) andForceX:0 andForceY:0 withMovingOptions:YES];
     [self createRectange:CGRectMake(randX+size*2+40, -size, size, size) andForceX:0 andForceY:0 withMovingOptions:YES];
+    
+    self.lblMeteorScore.text = [NSString stringWithFormat:@"SCORE: %i", self.meteorScore];
 }
-
-
--(void)countTimeBeforeCrash
+-(void)countTimeScore
 {
-    self.gravityConstant += 0.3;
+    self.gravityConstant += 0.4;
     
     self.shipObject.currentSpeedY += 0.05;
     float newY = self.shipObject.center.y-(self.speedFactor*self.shipObject.currentSpeedY);
     self.shipObject.center = CGPointMake(self.shipObject.center.x, newY);
     
-    self.timeBeforeCrash ++;
-    self.lblTimeBeforeCrash.text = [NSString stringWithFormat:@"Duration: %i\t%0.1f/%0.2f", self.timeBeforeCrash, self.gravityConstant, self.shipObject.currentSpeedY];
-}
--(void)endGame
-{
-    self.gameOver = YES;
-    self.endGameView.hidden = NO;
-    
-    [self.trmCountTimeBeforeCrash invalidate];
-    [self.trmCreateMeteors invalidate];
-    
-    if (self.timeBeforeCrash > self.timeHighscore) self.timeHighscore = self.timeBeforeCrash;
-    self.lblTimeHighscore.text = [NSString stringWithFormat:@"Highscore: %i", self.timeHighscore];
-}
--(void)startGame
-{
-    //hide the game over view - xcode bug (returns view to orignial position when another view is added to self.view)
-    self.endGameView.hidden = YES;
-    
-    //reset game variabes
-    self.timeBeforeCrash = 0;
-    self.gravityConstant = 5.5;
-    
-    
-    
-    
-    //create the ship, launch pad
-    [self createRectange:CGRectMake(160, self.view.frame.size.height, 10, 50) andForceX:0 andForceY:0 withMovingOptions:NO];
-    self.shipObject = self.gameObjectArray[0];
-    [self.shipObject setImageViewFromImage:[UIImage imageNamed:@"ship"]];
-    
-    UIView *launchPad = [[UIView alloc] initWithFrame:CGRectMake(85, self.view.frame.size.height+self.shipObject.frame.size.height, 150, 30)];
-    launchPad.backgroundColor = [UIColor grayColor];
-    [self.view addSubview:launchPad];
-    
-    
-    
-    
-    //animations - load up ship and launch pad - fire ship up, launch pad falls off screen - meteors start, launch pad released
-    [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        
-        self.shipObject.frame = CGRectMake(self.shipObject.frame.origin.x,
-                                           self.shipObject.frame.origin.y-launchPad.frame.size.height-self.shipObject.frame.size.height,
-                                           self.shipObject.frame.size.width,
-                                           self.shipObject.frame.size.height);
-        
-        launchPad.frame = CGRectMake(launchPad.frame.origin.x,
-                                     launchPad.frame.origin.y-launchPad.frame.size.height-self.shipObject.frame.size.height,
-                                     launchPad.frame.size.width,
-                                     launchPad.frame.size.height);
-        
-    } completion:^(BOOL finished) {
-        
-        [UIView animateWithDuration:1 delay:0.3 options:UIViewAnimationOptionCurveEaseOut animations:^{
-            
-            self.gameOver = NO;
-            
-            self.shipObject.frame = CGRectMake(self.shipObject.frame.origin.x,
-                                               self.shipObject.frame.origin.y-200,
-                                               self.shipObject.frame.size.width,
-                                               self.shipObject.frame.size.height);
-            
-            launchPad.frame = CGRectMake(launchPad.frame.origin.x,
-                                         launchPad.frame.origin.y+launchPad.frame.size.height,
-                                         launchPad.frame.size.width,
-                                         launchPad.frame.size.height);
-            
-        } completion:^(BOOL finished) {
-            
-            //remove launch pad
-            [launchPad removeFromSuperview];
-            
-            //start timers
-            self.trmCountTimeBeforeCrash = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(countTimeBeforeCrash) userInfo:nil repeats:YES];
-            self.trmCreateMeteors = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(createRandomMeteor) userInfo:nil repeats:YES];
-            
-        }];
-    }];
-    
-    
-    
-}
--(IBAction)newGame:(id)sender
-{
-    [self startGame];
+    self.timeScore ++;
+    self.lblTimeScore.text = [NSString stringWithFormat:@"%0.1f/%0.2fDURATION: %i", self.gravityConstant, self.shipObject.currentSpeedY, self.timeScore];
 }
 
 @end
