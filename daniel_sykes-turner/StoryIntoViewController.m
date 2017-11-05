@@ -15,6 +15,8 @@
 
 @interface StoryIntoViewController ()
 
+//@property (strong, nonatomic) IBOutlet UIButton *btnSkip;
+
 @property (strong, nonatomic) PersonView * personView;
 @property (strong, nonatomic) UIImageView * rocketView;
 @property (strong, nonatomic) UIImageView * rocketFlame;
@@ -41,13 +43,13 @@
     // Do any additional setup after loading the view.
     
     
-    BOOL firstRun = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstRun"];
-    if (firstRun)
+    BOOL notFirstRun = [[NSUserDefaults standardUserDefaults] boolForKey:@"notFirstRun"];
+    if (!notFirstRun)
     {
         [TransitionManager lightenScreenWithView:nil forViewController:self completion:^(BOOL finished) {
             
             [self runStory];
-            [[NSUserDefaults standardUserDefaults] setBool:false forKey:@"firstRun"];
+            [[NSUserDefaults standardUserDefaults] setBool:true forKey:@"notFirstRun"];
         }];
         
     }
@@ -72,7 +74,7 @@
     [self.view addSubview:self.backgroundView];
     
     //create the rocket
-    self.rocketView = [[UIImageView alloc] initWithFrame:CGRectMake(320, 168, 80, 400)];
+    self.rocketView = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.frame.size.width, self.view.frame.size.height-200, 40, 200)];
     [self.rocketView setImage:[UIImage imageNamed:@"ship"]];
     [self.view addSubview:self.rocketView];
     
@@ -85,7 +87,7 @@
     
     //create the person
     //for a square face, use 40x75 ratio
-    self.personView = [[PersonView alloc] initWithFrame:CGRectMake(120, 493, 40, 75)];
+    self.personView = [[PersonView alloc] initWithFrame:CGRectMake(120, self.view.frame.size.height-75, 40, 75)];
     [self.view addSubview:self.personView];
     
     
@@ -105,6 +107,8 @@
         
     } completion:^(BOOL finished) {
         
+//        [self.btnSkip setHidden:true];
+        
         [NSTimer scheduledTimerWithTimeInterval:1.0 target:self.personView selector:@selector(moveEyesUp)       userInfo:nil repeats:NO];
         [NSTimer scheduledTimerWithTimeInterval:1.4 target:self.personView selector:@selector(moveEyesRight)    userInfo:nil repeats:NO];
         [NSTimer scheduledTimerWithTimeInterval:1.6 target:self.personView selector:@selector(moveEyesUp)       userInfo:nil repeats:NO];
@@ -118,6 +122,7 @@
             [self.personView runToRocket:self.rocketView];
             
         } completion:^(BOOL finished) {
+            
             
             [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.personView selector:@selector(hidePerson) userInfo:nil repeats:NO];
             
@@ -143,7 +148,7 @@
 
 -(void)createMeteor
 {
-    int rand = arc4random() % 440 - 10;
+    int rand = arc4random() % ((int)self.view.frame.size.width+110) - 10;
     int size = 20;
     
     UIImageView *meteor = [[UIImageView alloc] initWithFrame:CGRectMake(rand, -20, size, size)];
@@ -162,28 +167,14 @@
     }];
 }
 
-
-//-(void)createMeteorWithXCoord:(int)xcoord andYCoord:(int)ycoord
+//-(IBAction)skip:(id)sender
 //{
-//    int size = 20;
+//    NSLog(@"tapped");
 //    
-//    UIImageView *meteor = [[UIImageView alloc] initWithFrame:CGRectMake(xcoord, ycoord, size, size)];
-//    [meteor setImage:[UIImage imageNamed:[NSString stringWithFormat:@"meteor%ia", (arc4random()) % 5 + 1]]];
-//    [self.backgroundView addSubview:meteor];
+//    if (self.trmCreateMeteors.isValid)
+//        [self.trmCreateMeteors invalidate];
 //    
-//    
-//    [UIView animateWithDuration:30 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
-//        
-//        meteor.center = CGPointMake(meteor.center.x, self.view.frame.size.height);
-//        
-//    } completion:^(BOOL finished) {
-//        
-//        //also completed when screen is no longer in use
-//        [meteor removeFromSuperview];
-//    }];
-//    
+//    [app_delegate moveToGameScreen];
 //}
-
-
 
 @end

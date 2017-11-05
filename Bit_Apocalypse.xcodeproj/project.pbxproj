@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6503B5B11913D72B005EB9F7 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6503B5B01913D72B005EB9F7 /* GameKit.framework */; };
+		650964971BDF04AB003B0B98 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 650964961BDF04AB003B0B98 /* SplashScreen.storyboard */; };
+		653CA65A1939BB71003D93A4 /* Operation_Catch_the_Bad_Guy_8_Bit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 653CA6581939BB71003D93A4 /* Operation_Catch_the_Bad_Guy_8_Bit.mp3 */; };
+		653CA65B1939BB71003D93A4 /* Pixelated_Cosmos.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 653CA6591939BB71003D93A4 /* Pixelated_Cosmos.mp3 */; };
 		65545B7718F7CB8300AF91E4 /* StoryIntoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 65545B7618F7CB8300AF91E4 /* StoryIntoViewController.m */; };
 		65545B7A18F7CC2F00AF91E4 /* PersonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 65545B7918F7CC2F00AF91E4 /* PersonView.m */; };
-		65B0615718F375BE00A2D2EC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65B0615618F375BE00A2D2EC /* Foundation.framework */; };
-		65B0615918F375BE00A2D2EC /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65B0615818F375BE00A2D2EC /* CoreGraphics.framework */; };
-		65B0615B18F375BE00A2D2EC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65B0615A18F375BE00A2D2EC /* UIKit.framework */; };
+		657618291920EE6500E6EED4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 657618281920EE6500E6EED4 /* AVFoundation.framework */; };
 		65B0616118F375BE00A2D2EC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 65B0615F18F375BE00A2D2EC /* InfoPlist.strings */; };
 		65B0616318F375BE00A2D2EC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 65B0616218F375BE00A2D2EC /* main.m */; };
 		65B0616718F375BE00A2D2EC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 65B0616618F375BE00A2D2EC /* AppDelegate.m */; };
@@ -26,7 +26,6 @@
 		65B0618218F375BE00A2D2EC /* daniel_sykes_turnerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 65B0618118F375BE00A2D2EC /* daniel_sykes_turnerTests.m */; };
 		65B0618D18F376BE00A2D2EC /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 65B0618C18F376BE00A2D2EC /* GameViewController.m */; };
 		65B0619318F3771B00A2D2EC /* GameObjectView.m in Sources */ = {isa = PBXBuildFile; fileRef = 65B0619218F3771B00A2D2EC /* GameObjectView.m */; };
-		65C5794419137F930028E88D /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65C5794319137F930028E88D /* CoreMotion.framework */; };
 		65C579471913971C0028E88D /* TransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 65C579461913971C0028E88D /* TransitionManager.m */; };
 /* End PBXBuildFile section */
 
@@ -42,11 +41,27 @@
 
 /* Begin PBXFileReference section */
 		6503B5B01913D72B005EB9F7 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		650964961BDF04AB003B0B98 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
+		653CA6581939BB71003D93A4 /* Operation_Catch_the_Bad_Guy_8_Bit.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Operation_Catch_the_Bad_Guy_8_Bit.mp3; sourceTree = "<group>"; };
+		653CA6591939BB71003D93A4 /* Pixelated_Cosmos.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Pixelated_Cosmos.mp3; sourceTree = "<group>"; };
 		65545B7518F7CB8300AF91E4 /* StoryIntoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryIntoViewController.h; sourceTree = "<group>"; };
 		65545B7618F7CB8300AF91E4 /* StoryIntoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryIntoViewController.m; sourceTree = "<group>"; };
 		65545B7818F7CC2F00AF91E4 /* PersonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersonView.h; sourceTree = "<group>"; };
 		65545B7918F7CC2F00AF91E4 /* PersonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PersonView.m; sourceTree = "<group>"; };
-		65B0615318F375BE00A2D2EC /* daniel_sykes-turner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "daniel_sykes-turner.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		657618241920EE5500E6EED4 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
+		657618261920EE5E00E6EED4 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		657618281920EE6500E6EED4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		6576182A1920EE6D00E6EED4 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		6576182C1920EE7600E6EED4 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		6576182E1920EE7C00E6EED4 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		657618301920EE8200E6EED4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		657618321920EE8A00E6EED4 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		657618361920EE9C00E6EED4 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		657618381920EEAD00E6EED4 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		65A4AA861921CAF9009A3AC5 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		65A4AA881921CB0C009A3AC5 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
+		65A4AA8A1921CB14009A3AC5 /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		65B0615318F375BE00A2D2EC /* Bit_Apocalypse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bit_Apocalypse.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65B0615618F375BE00A2D2EC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		65B0615818F375BE00A2D2EC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		65B0615A18F375BE00A2D2EC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -79,11 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6503B5B11913D72B005EB9F7 /* GameKit.framework in Frameworks */,
-				65C5794419137F930028E88D /* CoreMotion.framework in Frameworks */,
-				65B0615918F375BE00A2D2EC /* CoreGraphics.framework in Frameworks */,
-				65B0615B18F375BE00A2D2EC /* UIKit.framework in Frameworks */,
-				65B0615718F375BE00A2D2EC /* Foundation.framework in Frameworks */,
+				657618291920EE6500E6EED4 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,7 +114,9 @@
 		65B0614A18F375BE00A2D2EC = {
 			isa = PBXGroup;
 			children = (
-				65B0615C18F375BE00A2D2EC /* daniel_sykes-turner */,
+				653CA6581939BB71003D93A4 /* Operation_Catch_the_Bad_Guy_8_Bit.mp3 */,
+				653CA6591939BB71003D93A4 /* Pixelated_Cosmos.mp3 */,
+				65B0615C18F375BE00A2D2EC /* Bit_Apocalypse */,
 				65B0617B18F375BE00A2D2EC /* daniel_sykes-turnerTests */,
 				65B0615518F375BE00A2D2EC /* Frameworks */,
 				65B0615418F375BE00A2D2EC /* Products */,
@@ -113,7 +126,7 @@
 		65B0615418F375BE00A2D2EC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				65B0615318F375BE00A2D2EC /* daniel_sykes-turner.app */,
+				65B0615318F375BE00A2D2EC /* Bit_Apocalypse.app */,
 				65B0617418F375BE00A2D2EC /* daniel_sykes-turnerTests.xctest */,
 			);
 			name = Products;
@@ -122,6 +135,19 @@
 		65B0615518F375BE00A2D2EC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				657618321920EE8A00E6EED4 /* SystemConfiguration.framework */,
+				657618301920EE8200E6EED4 /* Security.framework */,
+				6576182E1920EE7C00E6EED4 /* MediaPlayer.framework */,
+				6576182C1920EE7600E6EED4 /* MessageUI.framework */,
+				6576182A1920EE6D00E6EED4 /* CoreTelephony.framework */,
+				657618281920EE6500E6EED4 /* AVFoundation.framework */,
+				657618261920EE5E00E6EED4 /* AudioToolbox.framework */,
+				657618241920EE5500E6EED4 /* AdSupport.framework */,
+				65A4AA8A1921CB14009A3AC5 /* EventKit.framework */,
+				65A4AA881921CB0C009A3AC5 /* EventKitUI.framework */,
+				65A4AA861921CAF9009A3AC5 /* Social.framework */,
+				657618381920EEAD00E6EED4 /* libz.dylib */,
+				657618361920EE9C00E6EED4 /* libsqlite3.0.dylib */,
 				6503B5B01913D72B005EB9F7 /* GameKit.framework */,
 				65C5794319137F930028E88D /* CoreMotion.framework */,
 				65B0615618F375BE00A2D2EC /* Foundation.framework */,
@@ -132,7 +158,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		65B0615C18F375BE00A2D2EC /* daniel_sykes-turner */ = {
+		65B0615C18F375BE00A2D2EC /* Bit_Apocalypse */ = {
 			isa = PBXGroup;
 			children = (
 				65B0616518F375BE00A2D2EC /* AppDelegate.h */,
@@ -140,11 +166,13 @@
 				65C579451913971C0028E88D /* TransitionManager.h */,
 				65C579461913971C0028E88D /* TransitionManager.m */,
 				65B0616818F375BE00A2D2EC /* Main.storyboard */,
+				650964961BDF04AB003B0B98 /* SplashScreen.storyboard */,
 				65CE8F59190F79E000333E34 /* ViewControllers */,
 				65CE8F5A190F79E800333E34 /* Objects */,
 				65B0616E18F375BE00A2D2EC /* Images.xcassets */,
 				65B0615D18F375BE00A2D2EC /* Supporting Files */,
 			);
+			name = Bit_Apocalypse;
 			path = "daniel_sykes-turner";
 			sourceTree = "<group>";
 		};
@@ -204,9 +232,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		65B0615218F375BE00A2D2EC /* daniel_sykes-turner */ = {
+		65B0615218F375BE00A2D2EC /* Bit_Apocalypse */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 65B0618518F375BE00A2D2EC /* Build configuration list for PBXNativeTarget "daniel_sykes-turner" */;
+			buildConfigurationList = 65B0618518F375BE00A2D2EC /* Build configuration list for PBXNativeTarget "Bit_Apocalypse" */;
 			buildPhases = (
 				65B0614F18F375BE00A2D2EC /* Sources */,
 				65B0615018F375BE00A2D2EC /* Frameworks */,
@@ -216,9 +244,9 @@
 			);
 			dependencies = (
 			);
-			name = "daniel_sykes-turner";
+			name = Bit_Apocalypse;
 			productName = "daniel_sykes-turner";
-			productReference = 65B0615318F375BE00A2D2EC /* daniel_sykes-turner.app */;
+			productReference = 65B0615318F375BE00A2D2EC /* Bit_Apocalypse.app */;
 			productType = "com.apple.product-type.application";
 		};
 		65B0617318F375BE00A2D2EC /* daniel_sykes-turnerTests */ = {
@@ -245,18 +273,23 @@
 		65B0614B18F375BE00A2D2EC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = UniverseApps;
 				TargetAttributes = {
 					65B0615218F375BE00A2D2EC = {
-						DevelopmentTeam = Q25A4A94FP;
+						DevelopmentTeam = BU3JKZ42Q4;
+						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 0;
+							};
+						};
 					};
 					65B0617318F375BE00A2D2EC = {
 						TestTargetID = 65B0615218F375BE00A2D2EC;
 					};
 				};
 			};
-			buildConfigurationList = 65B0614E18F375BE00A2D2EC /* Build configuration list for PBXProject "daniel_sykes-turner" */;
+			buildConfigurationList = 65B0614E18F375BE00A2D2EC /* Build configuration list for PBXProject "Bit_Apocalypse" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -269,7 +302,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				65B0615218F375BE00A2D2EC /* daniel_sykes-turner */,
+				65B0615218F375BE00A2D2EC /* Bit_Apocalypse */,
 				65B0617318F375BE00A2D2EC /* daniel_sykes-turnerTests */,
 			);
 		};
@@ -281,8 +314,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				65B0616F18F375BE00A2D2EC /* Images.xcassets in Resources */,
+				653CA65A1939BB71003D93A4 /* Operation_Catch_the_Bad_Guy_8_Bit.mp3 in Resources */,
 				65B0616118F375BE00A2D2EC /* InfoPlist.strings in Resources */,
 				65B0616A18F375BE00A2D2EC /* Main.storyboard in Resources */,
+				653CA65B1939BB71003D93A4 /* Pixelated_Cosmos.mp3 in Resources */,
+				650964971BDF04AB003B0B98 /* SplashScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,7 +361,7 @@
 /* Begin PBXTargetDependency section */
 		65B0617A18F375BE00A2D2EC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 65B0615218F375BE00A2D2EC /* daniel_sykes-turner */;
+			target = 65B0615218F375BE00A2D2EC /* Bit_Apocalypse */;
 			targetProxy = 65B0617918F375BE00A2D2EC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -366,18 +402,31 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -390,7 +439,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -404,25 +453,37 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -431,12 +492,27 @@
 		65B0618618F375BE00A2D2EC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = BU3JKZ42Q4;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "daniel_sykes-turner/daniel_sykes-turner-Prefix.pch";
 				INFOPLIST_FILE = "daniel_sykes-turner/daniel_sykes-turner-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/InMobi-iOS-SDK-4.3-2.0",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lz",
+					"-lsqlite3.0",
+					"-licucore",
+					"-all_load",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.universeapps.bitapocalypse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -446,12 +522,27 @@
 		65B0618718F375BE00A2D2EC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = BU3JKZ42Q4;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "daniel_sykes-turner/daniel_sykes-turner-Prefix.pch";
 				INFOPLIST_FILE = "daniel_sykes-turner/daniel_sykes-turner-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/InMobi-iOS-SDK-4.3-2.0",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lz",
+					"-lsqlite3.0",
+					"-licucore",
+					"-all_load",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.universeapps.bitapocalypse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -474,6 +565,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "daniel_sykes-turnerTests/daniel_sykes-turnerTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.universeapps.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -492,6 +584,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "daniel_sykes-turner/daniel_sykes-turner-Prefix.pch";
 				INFOPLIST_FILE = "daniel_sykes-turnerTests/daniel_sykes-turnerTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.universeapps.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -501,7 +594,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		65B0614E18F375BE00A2D2EC /* Build configuration list for PBXProject "daniel_sykes-turner" */ = {
+		65B0614E18F375BE00A2D2EC /* Build configuration list for PBXProject "Bit_Apocalypse" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				65B0618318F375BE00A2D2EC /* Debug */,
@@ -510,7 +603,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		65B0618518F375BE00A2D2EC /* Build configuration list for PBXNativeTarget "daniel_sykes-turner" */ = {
+		65B0618518F375BE00A2D2EC /* Build configuration list for PBXNativeTarget "Bit_Apocalypse" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				65B0618618F375BE00A2D2EC /* Debug */,

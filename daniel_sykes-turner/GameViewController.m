@@ -6,6 +6,13 @@
 //  Copyright (c) 2014 UniverseApps. All rights reserved.
 //
 
+/*
+ fun idea for update:
+ 
+ a 'hard' version where you are also in a storm and the screen flashes black or white sometimes
+ - to test, just blink while playing normal
+ */
+
 #import "GameViewController.h"
 #import "GameObjectView.h"
 #import "AppDelegate.h"
@@ -13,6 +20,7 @@
 
 #import <CoreMotion/CoreMotion.h>
 #import <GameKit/GameKit.h>
+
 
 @interface GameViewController ()
 
@@ -64,31 +72,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    
-    //start the accelerometer
-    //self.motionManager = [[CMMotionManager alloc] init]; //turned off for now
-    [self.motionManager startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init] withHandler:^(CMAccelerometerData *data, NSError *error) {
-        
-        //lest the ship object update properly
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            if (self.gameOver == NO)
-            {
-                //detect direction of movement
-                if (data.acceleration.x >= 0.04) self.shipsDirectionOfMovement = @"right";
-                else if (data.acceleration.x <= -0.04) self.shipsDirectionOfMovement = @"left";
-                else self.shipsDirectionOfMovement = @"up";
-                
-                self.shipObject.center = CGPointMake(self.shipObject.center.x+data.acceleration.x*15, self.shipObject.center.y);
-                
-                if (self.shipObject.center.x < 0)
-                    self.shipObject.center = CGPointMake(0, self.shipObject.center.y);
-                else if (self.shipObject.center.x > self.view.frame.size.width)
-                    self.shipObject.center = CGPointMake(320, self.shipObject.center.y);
-            }
-        });
-    }];
-    
     self.gameObjectArray = [[NSMutableArray alloc] init];
     self.updateFrequency = 0.01;//changes the speed and the cpu usage of the game
     self.speedFactor = 1;       //changes the speed of the game
@@ -99,7 +82,7 @@
     
     self.meteorHighscore = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"meteorHighscore"];
     self.timeHighscore = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"timeHighscore"];
-    self.lblTimeHighscore.text = [NSString stringWithFormat:@"DURATION: %i", self.timeHighscore];
+    self.lblTimeHighscore.text = [NSString stringWithFormat:@"YOUR SCORE: %i", self.meteorScore];
     self.lblMeteorHighscore.text = [NSString stringWithFormat:@"HIGHSCORE: %i", self.meteorHighscore];
     
     [TransitionManager lightenScreenWithView:nil forViewController:self completion:^(BOOL finished) {
@@ -113,10 +96,9 @@
 }
 
 
-
 -(void)reportGameCentreScore
 {
-    GKScore *reportScore = [[GKScore alloc] initWithLeaderboardIdentifier:@"meteorHighscores"];
+    GKScore *reportScore = [[GKScore alloc] initWithLeaderboardIdentifier:@"grp.meteorHighscores"];
     reportScore.value = self.meteorHighscore;
     
     [GKScore reportScores:[NSArray arrayWithObjects:reportScore, nil] withCompletionHandler:nil];
@@ -140,15 +122,15 @@
         self.meteorHighscore = self.meteorScore;
         self.timeHighscore = self.timeScore;
         
-        self.lblTimeHighscore.text = [NSString stringWithFormat:@"DURATION: %i", self.timeHighscore];
-        self.lblMeteorHighscore.text = [NSString stringWithFormat:@"HIGHSCORE: %i", self.meteorHighscore];
-        
         [[NSUserDefaults standardUserDefaults] setInteger:self.meteorHighscore forKey:@"meteorHighscore"];
         [[NSUserDefaults standardUserDefaults] setInteger:self.timeHighscore forKey:@"timeHighscore"];
         
         //send new high scores only
         [self reportGameCentreScore];
     }
+    
+    self.lblTimeHighscore.text = [NSString stringWithFormat:@"YOUR SCORE: %i", self.meteorScore];
+    self.lblMeteorHighscore.text = [NSString stringWithFormat:@"HIGHSCORE: %i", self.meteorHighscore];
 }
 -(void)startGame
 {
@@ -156,29 +138,33 @@
     self.endGameView.hidden = YES;
     
     //reset game variabes
-    self.gravityConstant = 5.5;
+    self.gravityConstant = self.view.frame.size.height/64; // 7.5 on a 320px screen
     self.timeScore = 0;
     self.meteorScore = 0;
-    self.lblTimeScore.text = [NSString stringWithFormat:@"%0.1f/%0.2fDURATION: %i", self.gravityConstant, self.shipObject.currentSpeedY, self.timeScore];
+    self.lblTimeScore.text = [NSString stringWithFormat:@"DURATION: %i", self.timeScore];
     self.lblMeteorScore.text = [NSString stringWithFormat:@"SCORE: %i", self.meteorScore];
-    
+    self.lblMeteorScore.textColor = [UIColor whiteColor];
+    self.lblTimeScore.textColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor colorWithRed:0 green:152.0/255.0 blue:219.0/255.0 alpha:1];
     
     //create the ship, launch pad
-    [self createRectange:CGRectMake(155,
+    int shipWidth = self.view.frame.size.width/32;
+    [self createRectange:CGRectMake(self.view.frame.size.width/2-shipWidth/2,
                                     self.view.frame.size.height,
-                                    10,
-                                    50) andForceX:0 andForceY:0 withMovingOptions:NO];
+                                    shipWidth,
+                                    shipWidth*5) andForceX:0 andForceY:0 withMovingOptions:NO];
     self.shipObject = self.gameObjectArray[0];
     [self.shipObject setImageViewFromImage:[UIImage imageNamed:@"ship"]];
     
-    if (self.imgShipFlame == nil) self.imgShipFlame = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 15, 10)];
+    if (self.imgShipFlame == nil) self.imgShipFlame = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.shipObject.frame.size.width*1.5, self.shipObject.frame.size.width)];
     self.imgShipFlame.center = CGPointMake(self.shipObject.frame.size.width/2, self.shipObject.frame.size.height);
     [self.shipObject addSubview:self.imgShipFlame];
     
-    UIView *launchPad = [[UIView alloc] initWithFrame:CGRectMake(85,
+    int launchWidth = 150;
+    UIView *launchPad = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2-launchWidth/2,
                                                                  self.view.frame.size.height+self.shipObject.frame.size.height,
-                                                                 150,
-                                                                 30)];
+                                                                 launchWidth,
+                                                                 launchWidth/5)];
     launchPad.backgroundColor = [UIColor grayColor];
     [self.view addSubview:launchPad];
     
@@ -186,7 +172,7 @@
     
     
     //animations - load up ship and launch pad - fire ship up, launch pad falls off screen - meteors start, launch pad released
-    [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         
         self.shipObject.frame = CGRectMake(self.shipObject.frame.origin.x,
                                            self.shipObject.frame.origin.y-launchPad.frame.size.height-self.shipObject.frame.size.height,
@@ -202,12 +188,13 @@
         
     } completion:^(BOOL finished) {
         
-        [UIView animateWithDuration:1 delay:0.3 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        [UIView animateWithDuration:0.7 delay:0.2 options:UIViewAnimationOptionCurveEaseOut animations:^{
             
             self.gameOver = NO;
             
             self.shipObject.frame = CGRectMake(self.shipObject.frame.origin.x,
-                                               self.shipObject.frame.origin.y-200,
+                                               //self.shipObject.frame.origin.y-
+                                                self.view.frame.size.height/3*2,
                                                self.shipObject.frame.size.width,
                                                self.shipObject.frame.size.height);
             
@@ -484,36 +471,65 @@
 }
 -(void)createRandomMeteor
 {
+    [self darkenBackground];
+    
     int size = arc4random() % 3;
     if (size == 0)
     {
-        size = 10;
-        self.meteorScore += 1;
+        size = self.view.frame.size.width/32;
+        [self countMeteorScoreWithNewScore:1];
     }
     else
     {
-        size = 30;
-        self.meteorScore += 3;
+        size = self.view.frame.size.width/10;
+        [self countMeteorScoreWithNewScore:3];
     }
     
-    int randX = arc4random() % (320 + size*2) - size*3;
+//    int randX = arc4random() % (320 + size*2) - size*3;
+    int randX = arc4random() % (int)self.view.frame.size.width - size*2;
     
     [self createRectange:CGRectMake(randX, -size, size, size) andForceX:0 andForceY:0 withMovingOptions:YES];
     [self createRectange:CGRectMake(randX+size+20, -size, size, size) andForceX:0 andForceY:0 withMovingOptions:YES];
     [self createRectange:CGRectMake(randX+size*2+40, -size, size, size) andForceX:0 andForceY:0 withMovingOptions:YES];
-    
-    self.lblMeteorScore.text = [NSString stringWithFormat:@"SCORE: %i", self.meteorScore];
 }
 -(void)countTimeScore
 {
-    self.gravityConstant += 0.4;
+    self.gravityConstant += self.view.frame.size.height/1000;
     
     self.shipObject.currentSpeedY += 0.05;
     float newY = self.shipObject.center.y-(self.speedFactor*self.shipObject.currentSpeedY);
     self.shipObject.center = CGPointMake(self.shipObject.center.x, newY);
     
     self.timeScore ++;
-    self.lblTimeScore.text = [NSString stringWithFormat:@"%0.1f/%0.2fDURATION: %i", self.gravityConstant, self.shipObject.currentSpeedY, self.timeScore];
+    self.lblTimeScore.text = [NSString stringWithFormat:@"DURATION: %i", self.timeScore];
+}
+-(void)countMeteorScoreWithNewScore:(int)score
+{
+    self.meteorScore += score;
+    
+    if (self.meteorScore > self.meteorHighscore)
+    {
+        self.lblMeteorScore.textColor = [UIColor colorWithRed:192.0/255.0 green:0 blue:0 alpha:1];
+        self.lblTimeScore.textColor = [UIColor colorWithRed:192.0/255.0 green:0 blue:0 alpha:1];
+    }
+    
+    self.lblMeteorScore.text = [NSString stringWithFormat:@"SCORE: %i", self.meteorScore];
+}
+-(void)darkenBackground
+{
+    const CGFloat* components = CGColorGetComponents(self.view.backgroundColor.CGColor);
+    NSLog(@"Red: %f", components[0]);
+    NSLog(@"Green: %f", components[1]);
+    NSLog(@"Blue: %f", components[2]);
+    
+    float red = components[0];
+    float green = components[1];
+    float blue = components[2];
+    
+    green *= 0.994;
+    blue *= 0.998;
+    
+    self.view.backgroundColor = [UIColor colorWithRed:red green:green blue:blue alpha:1];
 }
 
 @end
